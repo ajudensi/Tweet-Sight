@@ -20,7 +20,7 @@ var client = new Twitter({
   access_token_secret: process.env.TWITTER_ACCESS_TOKEN_SECET, //'TWITTER_ACCESS_TOKEN_SECET'
 });
 
-vaar  rl = readLine.createInterface({
+var  rl = readLine.createInterface({
   input: process.stdin,
   output: process.stdout
 });
