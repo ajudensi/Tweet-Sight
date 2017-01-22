@@ -236,7 +236,7 @@ rl.question(colors.input('Enter a twitter handle: '), (twHandle) => {
 									var fear = 0;
 									var joy = 0;
 									var sadness = 0;
-									arr.forEach(function(value){
+									result.forEach(function(value){
 								    	anger += value.anger;
 								     	disgust += value.disgust;
 								     	fear += value.fear;
