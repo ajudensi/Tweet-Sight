@@ -1,12 +1,10 @@
 var Twitter = require('twitter');
 var readLine = require('readline');
-var fs = require('fs');
+//var fs = require('fs');
 var wordsFrequency = require('./lib/wordFrequency');
 var colors = require('colors');
 var Table = require('cli-table');
-var request = require('request');
-var progress = require('request-progress');
-var async = require('async');
+
 
 var alchemy = require('node_alchemy')(process.env.ALCHEMY_API_KEY /*'API KEY GOES HERE'*/);
 
@@ -22,7 +20,7 @@ var client = new Twitter({
   access_token_secret: process.env.TWITTER_ACCESS_TOKEN_SECET, //'TWITTER_ACCESS_TOKEN_SECET'
 });
 
-const rl = readLine.createInterface({
+vaar  rl = readLine.createInterface({
   input: process.stdin,
   output: process.stdout
 });
