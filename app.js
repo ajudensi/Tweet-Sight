@@ -1,12 +1,11 @@
 var Twitter = require('twitter');
 var readLine = require('readline');
-//var fs = require('fs');
 var wordsFrequency = require('./lib/wordFrequency');
 var colors = require('colors');
 var Table = require('cli-table');
 
 
-var alchemy = require('node_alchemy')(process.env.ALCHEMY_API_KEY /*'API KEY GOES HERE'*/);
+var alchemy = require('node_alchemy')(process.env.ALCHEMY_API_KEY /*'API KEY GOES HERE'*/ );
 
 var watson = require('watson-developer-cloud');
 var alchemy_language = watson.alchemy_language({
@@ -20,7 +19,7 @@ var client = new Twitter({
   access_token_secret: process.env.TWITTER_ACCESS_TOKEN_SECET, //'TWITTER_ACCESS_TOKEN_SECET'
 });
 
-var  rl = readLine.createInterface({
+var rl = readLine.createInterface({
   input: process.stdin,
   output: process.stdout
 });
@@ -39,19 +38,19 @@ colors.setTheme({
 });
 
 var table = new Table({
-    head: [colors.yellow('S/no.'), colors.yellow('Word'), colors.yellow('Frequency')], 
-    colWidths: [10, 30, 20]
+  head: [colors.yellow('S/no.'), colors.yellow('Word'), colors.yellow('Frequency')],
+  colWidths: [10, 30, 20]
 });
 
 var emotionTable = new Table({
-	head: [colors.yellow('Emotion'), colors.yellow('Score')],
-	colWidths: [30, 20]
+  head: [colors.yellow('Emotion'), colors.yellow('Score')],
+  colWidths: [30, 20]
 })
 
 
 console.log('');
 console.log('');
-console.log(colors.help.bold('\t WELCOME TO TWITITER DATA INSIGHT'));
+console.log(colors.help.bold('\t WELCOME TO TWEET SIGHT'));
 console.log(colors.silly('------------------------------------------------'));
 console.log('');
 console.log(colors.verbose('\t You can perform Twitter \n \n 1. Word Analysis \n \n 2. Sentiment Analysis \n \n 3. Emotion Analysis'));
@@ -62,220 +61,239 @@ console.log(colors.red.bold('Note:! ') + colors.yellow.bold('You need a Twitter 
 console.log('');
 rl.question(colors.input('Enter a twitter handle: '), (twHandle) => {
 
-	if(twHandle) {
-		console.log('');
-		console.log(colors.bgBlue('\t Verifying your twitter handle'));
-		console.log(colors.silly('-------------------------------------------------'));
+  if (twHandle) {
+    console.log('');
+    console.log(colors.bgBlue('\t Verifying your twitter handle'));
+    console.log(colors.silly('-------------------------------------------------'));
 
-		client.get('statuses/user_timeline', {screen_name: twHandle}, function(err, tweets, res){
-			
-			var twUrl = 'https://api.twitter.com/1.1/statuses/user_timeline/${twHandle}.json';
+    client.get('statuses/user_timeline', {
+      screen_name: twHandle
+    }, function(err, tweets, res) {
 
-		
+      if (!err) {
+        twHandle = twHandle.toUpperCase();
+        console.log('');
+        console.log(colors.bgGreen.bold(` \t Hello ${twHandle} \t`));
+        console.log('');
+        console.log(colors.silly('----------------------------'));
+        console.log('');
+        console.log(colors.verbose('Choose a task you want to do. \n \n 1 => Word Frequency Analysis \n \n 2 => Sentiment Analysis \n \n 3 => Emotion Analysis'));
+        console.log('');
 
-			if(!err){
-				twHandle = twHandle.toUpperCase();
-				console.log('');
-				console.log(colors.bgGreen.bold(` \t Hello ${twHandle} \t`));
-				console.log('');
-				console.log(colors.silly('----------------------------'));
-				console.log('');
-				console.log(colors.verbose('Choose a task you want to do. \n \n 1 => Word Frequency Analysis \n \n 2 => Sentiment Analysis \n \n 3 => Emotion Analysis'));
-				console.log('');
-				
-				rl.question(colors.input('Enter 1 or 2 or 3: '), (toDo) => {
-					console.log('');
-					if(toDo == 1){
+        rl.question(colors.input('Enter 1 or 2 or 3: '), (toDo) => {
+          console.log('');
+          if (toDo == 1) {
 
-						console.log(colors.red.bold('\t Note:! ') + colors.yellow.bold('Only numbers are allowed (E.g. 12)'));
-						console.log('');
+            console.log(colors.red.bold('\t Note:! ') + colors.yellow.bold('Only numbers are allowed (E.g. 12)'));
+            console.log('');
 
-						rl.question(colors.input('How many tweets do you want to analyse?: '), (twCount) => {
-							console.log(''); 
-							
-							if(twCount || typeof twCount == 'number') {
+            rl.question(colors.input('How many tweets do you want to analyse?: '), (twCount) => {
+              console.log('');
 
-								console.log(colors.bgGreen(`${twCount} tweets prepared`)); 
-								
-								console.log(''); 
-								rl.question(colors.input('How many words do you need?: '), (wordsCount) => {
-									console.log('');
+              if (twCount || typeof twCount == 'number') {
 
-									if(wordsCount || typeof wordsCount == 'number') {
+                console.log(colors.bgGreen(`${twCount} tweets prepared`));
 
-										console.log(colors.bgGreen(`${wordsCount} words Analysed`)); 
+                console.log('');
+                rl.question(colors.input('How many words do you need?: '), (wordsCount) => {
+                  console.log('');
 
-										console.log('');
+                  if (wordsCount || typeof wordsCount == 'number') {
 
-										client.get('statuses/user_timeline', {screen_name: twHandle, count: twCount}, function(err, tweets, res){
-											if(!err){
-												var twObj = {tweets: tweets};
-												var twLength =twObj.tweets.length;
-												var allTweet = '';
-												//do word frequency
-												for(let i = 0; i < twObj.tweets.length - 1; i++){
-													 allTweet += twObj.tweets[i].text;
-												}
+                    console.log(colors.bgGreen(`${wordsCount} words Analysed`));
 
-												words = wordsFrequency(allTweet);
-												let i = 1;
+                    console.log('');
 
-												for(var key in words){
-													
-													if(key == wordsCount) break;
-												    if (words.hasOwnProperty(key)) {
-												    	table.push(
-														    [i, words[key].word, words[key].freq]
-														);
-												       //console.log(colors.verbose(`Word: ${words[key].word} <===> Frequency: ${words[key].freq}`));
-												    }
-												    i++;
-									    		}
+                    client.get('statuses/user_timeline', {
+                      screen_name: twHandle,
+                      count: twCount
+                    }, function(err, tweets, res) {
+                      if (!err) {
+                        var twObj = {
+                          tweets: tweets
+                        };
+                        var twLength = twObj.tweets.length;
+                        var allTweet = '';
+                        //do word frequency
+                        for (let i = 0; i < twObj.tweets.length - 1; i++) {
+                          allTweet += twObj.tweets[i].text;
+                        }
 
-									    		console.log('');
-									    		console.log(colors.verbose.bold(`\t \t Word Analysis for ${twHandle}`));
-									    		console.log(colors.verbose(table.toString()));
-									    		console.log('');
-									    	} else {
-									    		console.log(colors.bgRed('\n Sorry! An error occured. \n Pehaps bad internet'));
-									    	}
-									    });
-									} else {
-										console.log(colors.bgRed('Oh no! You passed an invalid value'));
-										rl.close();
-									}
-									rl.close();
-								});
-							} else {
-								console.log(colors.bgRed('Oh no! You passed an invalid value'));
-								rl.close();
-							}
-						});
-					} else if(toDo == 2){
-						client.get('statuses/user_timeline', {screen_name: twHandle, count: 15}, function(err, tweets, res){
-							if(!err){
-								var twObj = {tweets: tweets};
-								var twLength =twObj.tweets.length;
-								var promises = [];
-								var sentimentSum = 0;
-						//do sentiment
-								for(let i = 0; i < twLength - 1; i++){
-									eachTweet = twObj.tweets[i];		
+                        words = wordsFrequency(allTweet);
+                        let i = 1;
 
-									var eachPromise = alchemy.lookup('sentiment', 'text', eachTweet.text)
-					                    .then(function(result) {
-					                    	if(result.data.docSentiment.score){
-					                        	sentimentSum += parseFloat(result.data.docSentiment.score);
-					                        }
-					                    }).catch(function(err) {
-					                        //console.log({ status: 'error', message: err });
-					                    })
-									promises.push(eachPromise);
-								}
-								
-								Promise.all(promises).then((result) => {
-											console.log('');
-											console.log(colors.green(`${twHandle} sentiment cumulative is ${sentimentSum}`));
-											var sentimentType = ((sentimentSum > 0) ? 'Positive' : ((sentimentSum < 0) ? 'Negative' : 'Neutal'));
-											console.log('');
-											console.log(colors.green(`I think you are generally ${sentimentType}`));
-											console.log('');
-										}).catch(()=>{
-											console.log(colors.bgRed("error"));
-										});
-							}
-						});
-						rl.close();
-					} else if(toDo == 3){
-						client.get('statuses/user_timeline', {screen_name: twHandle, count: 15}, function(err, tweets, res){
-							if(!err){
-								var twObj = {tweets: tweets};
-								var allPromise = [];
-								
-								twObj.tweets.forEach(function(values){
-									var obj = {
-											anger:0,
-											disgust:0,
-											fear:0,
-											joy:0,
-											sadness:0.0
-									};	
+                        for (var key in words) {
 
-									var eachPromise = new Promise(function(resolve, reject){
-										alchemy_language.emotion({text: values.text}, function(err, response) {
-											if(err){
-												reject(err);
-											} else {
-												if(response.docEmotions.anger){
-													obj.anger += parseFloat(response.docEmotions.anger);
-												}
-												if(response.docEmotions.disgust){
-													obj.disgust += parseFloat(response.docEmotions.disgust);
-												}
-												if(response.docEmotions.fear){
-													obj.fear += parseFloat(response.docEmotions.fear);
-												}
-												if(response.docEmotions.joy){
-													obj.joy += parseFloat(response.docEmotions.joy);
-												}
-												if(response.docEmotions.sadness){
-													obj.sadness += parseFloat(response.docEmotions.sadness);
-												}
-												resolve(obj);
-											}
-										})
-									});
-									allPromise.push(eachPromise);
-								});
+                          if (key == wordsCount) break;
+                          if (words.hasOwnProperty(key)) {
+                            table.push(
+                              [i, words[key].word, words[key].freq]
+                            );
+                            //console.log(colors.verbose(`Word: ${words[key].word} <===> Frequency: ${words[key].freq}`));
+                          }
+                          i++;
+                        }
 
-								Promise.all(allPromise).then((result)=>{
-									var anger = 0
-									var disgust = 0;
-									var fear = 0;
-									var joy = 0;
-									var sadness = 0;
-									result.forEach(function(value){
-								    	anger += value.anger;
-								     	disgust += value.disgust;
-								     	fear += value.fear;
-								     	joy += value.joy;
-								     	sadness += value.sadness;
-								    });
+                        console.log('');
+                        console.log(colors.verbose.bold(`\t \t Word Analysis for ${twHandle}`));
+                        console.log(colors.verbose(table.toString()));
+                        console.log('');
+                      } else {
+                        console.log(colors.bgRed('\n Sorry! An error occured. \n Pehaps bad internet'));
+                      }
+                    });
+                  } else {
+                    console.log(colors.bgRed('Oh no! You passed an invalid value'));
+                    rl.close();
+                  }
+                  rl.close();
+                });
+              } else {
+                console.log(colors.bgRed('Oh no! You passed an invalid value'));
+                rl.close();
+              }
+            });
+          } else if (toDo == 2) {
+            client.get('statuses/user_timeline', {
+              screen_name: twHandle,
+              count: 25
+            }, function(err, tweets, res) {
+              if (!err) {
+                var twObj = {
+                  tweets: tweets
+                };
+                var twLength = twObj.tweets.length;
+                var promises = [];
+                var sentimentSum = 0;
+                //do sentiment
+                for (let i = 0; i < twLength - 1; i++) {
+                  eachTweet = twObj.tweets[i];
 
-									emotionTable.push(
-										['Anger ', anger.toFixed(3)],
-										['Disgust ', disgust.toFixed(3)],
-										['Fear ', fear.toFixed(3)],
-										['Joy ', joy.toFixed(3)],
-										['Sadness ', sadness.toFixed(3)]
-									);
+                  var eachPromise = alchemy.lookup('sentiment', 'text', eachTweet.text)
+                    .then(function(result) {
+                      if (result.data.docSentiment.score) {
+                        sentimentSum += parseFloat(result.data.docSentiment.score);
+                      }
+                    }).catch(function(err) {
+                      //console.log({ status: 'error', message: err });
+                    })
+                  promises.push(eachPromise);
+                }
 
-									console.log('');
-									console.log(colors.verbose.bold(`\t \t Emotion Analysis for ${twHandle}`));
-									console.log('');
-									console.log(colors.verbose(emotionTable.toString()))
+                Promise.all(promises).then((result) => {
+                  
+                  var sentimentType = ((sentimentSum > 0) ? 'Positive' : ((sentimentSum < 0) ? 'Negative' : 'Neutal'));
 
-								}).catch((res) => {
-									console.log(colors.red(res.statusInfo));
-								})
+                  if(sentimentType == 'Negative') senTypeColor = colors.red;
+                  if(sentimentType == 'Positive') senTypeColor = colors.green;
+                  if(sentimentType == 'Neutral') senTypeColor =  colors.grey;
 
-							}
+                  console.log('');
+                  console.log(senTypeColor(`${twHandle} sentiment cumulative is ${sentimentSum}`));
+                  console.log('');
+                  
+                  console.log(senTypeColor(`I think you are generally ${sentimentType}`));
+                  console.log('');
 
-						});
-						rl.close();
-					} else {
-						console.log(colors.bgRed('Please try again with a valid task command'));
-						rl.close();
-					} 
-				});
-			
-			} else {
-				console.log(colors.bgRed('An error occurred. Enter a valid twitter handle or check network connection '));
-				rl.close();
-			}
-		});
-		
-	} else {
-		rl.close();
-	}
+                }).catch(() => {
+                  console.log(colors.bgRed("error"));
+                });
+              }
+            });
+            rl.close();
+          } else if (toDo == 3) {
+            client.get('statuses/user_timeline', {
+              screen_name: twHandle,
+              count: 25
+            }, function(err, tweets, res) {
+              if (!err) {
+                var twObj = {
+                  tweets: tweets
+                };
+                var allPromise = [];
+
+                twObj.tweets.forEach(function(values) {
+                  var obj = {
+                    anger: 0,
+                    disgust: 0,
+                    fear: 0,
+                    joy: 0,
+                    sadness: 0.0
+                  };
+
+                  var eachPromise = new Promise(function(resolve, reject) {
+                    alchemy_language.emotion({
+                      text: values.text
+                    }, function(err, response) {
+                      if (err) {
+                        reject(err);
+                      } else {
+                        if (response.docEmotions.anger) {
+                          obj.anger += parseFloat(response.docEmotions.anger);
+                        }
+                        if (response.docEmotions.disgust) {
+                          obj.disgust += parseFloat(response.docEmotions.disgust);
+                        }
+                        if (response.docEmotions.fear) {
+                          obj.fear += parseFloat(response.docEmotions.fear);
+                        }
+                        if (response.docEmotions.joy) {
+                          obj.joy += parseFloat(response.docEmotions.joy);
+                        }
+                        if (response.docEmotions.sadness) {
+                          obj.sadness += parseFloat(response.docEmotions.sadness);
+                        }
+                        resolve(obj);
+                      }
+                    })
+                  });
+                  allPromise.push(eachPromise);
+                });
+
+                Promise.all(allPromise).then((result) => {
+                  var anger = 0
+                  var disgust = 0;
+                  var fear = 0;
+                  var joy = 0;
+                  var sadness = 0;
+                  result.forEach(function(value) {
+                    anger += value.anger;
+                    disgust += value.disgust;
+                    fear += value.fear;
+                    joy += value.joy;
+                    sadness += value.sadness;
+                  });
+
+                  emotionTable.push(
+                    ['Anger ', anger.toFixed(3)], ['Disgust ', disgust.toFixed(3)], ['Fear ', fear.toFixed(3)], ['Joy ', joy.toFixed(3)], ['Sadness ', sadness.toFixed(3)]
+                  );
+
+                  console.log('');
+                  console.log(colors.verbose.bold(`\t \t Emotion Analysis for ${twHandle}`));
+                  console.log('');
+                  console.log(colors.verbose(emotionTable.toString()))
+
+                }).catch((res) => {
+                  console.log(colors.red(res.statusInfo));
+                })
+
+              }
+
+            });
+            rl.close();
+          } else {
+            console.log(colors.bgRed('Please try again with a valid task command'));
+            rl.close();
+          }
+        });
+
+      } else {
+        console.log(colors.bgRed('An error occurred. Enter a valid twitter handle or check network connection '));
+        rl.close();
+      }
+    });
+
+  } else {
+    rl.close();
+  }
 });
