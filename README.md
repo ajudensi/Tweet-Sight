@@ -7,7 +7,7 @@ A command line application built with node.js consuming the IBM Bluemix Alchemy 
 - **Emotion Analysis**
 
 ### Modules
-- watson developer cloud
+- watson-developer-cloud
 - twitter
 - node_alchemy
 - stopword
@@ -15,11 +15,12 @@ A command line application built with node.js consuming the IBM Bluemix Alchemy 
 - cli-table
 - colors
 ### Installation
-After cloning or download
+After cloning or download. In the terminal/cli, navigate to the folder and run
 ```
 npm install
-``
+```
 to get needed modules
+
 ### Usage
 On the terminal/CLI, navigate to that directory.
 ```
