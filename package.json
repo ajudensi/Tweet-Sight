@@ -1,5 +1,5 @@
 {
-  "name": "twisight",
+  "name": "tweetsight",
   "version": "1.0.0",
   "description": "A Nodejs CLI app for twitter insight",
   "main": "app.js",
