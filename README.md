@@ -1,2 +1,27 @@
-# twitter-insight-
-A command line application built with node.js consuming the IBM Bluemix Alchemy API. Provides tools such as Word Frequency Analysis, Sentiment Analysis, and Emotion Analysis
+# Tweet Sight
+A command line application built with node.js consuming the IBM Bluemix Alchemy API.
+
+### Feature supports
+- **Word Frequency Analysis**
+- **Sentiment Analysis**
+- **Emotion Analysis**
+
+### Modules
+- watson developer cloud
+- twitter
+- node_alchemy
+- stopword
+- readline
+- cli-table
+- colors
+### Installation
+After cloning or download
+```
+npm install
+``
+to get needed modules
+### Usage
+On the terminal/CLI, navigate to that directory.
+```
+node app.js
+```
