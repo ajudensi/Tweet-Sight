@@ -14,7 +14,9 @@ A command line application built with node.js consuming the IBM Bluemix Alchemy 
 - readline
 - cli-table
 - colors
+
 ### Installation
+
 After cloning or download. In the terminal/cli, navigate to the folder and run
 ```
 npm install
